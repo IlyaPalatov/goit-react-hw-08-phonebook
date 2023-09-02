@@ -6,8 +6,6 @@ import Login from './Login';
 import Contacts from './Contacts';
 
 const App = () => {
-  const token = localStorage.getItem('authToken');
-
   return (
     <Router>
       <div>
@@ -15,11 +13,8 @@ const App = () => {
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          {!token ? (
-            <Route path="/contacts" element={<Navigate to="/login" />} />
-          ) : (
-            <Route path="/contacts" element={<Contacts />} />
-          )}
+          <Route path="/contacts" element={<Contacts />} />
+          <Route path="/*" element={<Navigate to="/contacts" />} /> {/* Додано перенаправлення на /contacts за замовчуванням */}
         </Routes>
       </div>
     </Router>

@@ -1,8 +1,12 @@
+// Login.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, TextField, Typography, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -16,9 +20,19 @@ const Login = () => {
     });
   };
 
-  const handleLoginSuccess = (token) => {
+  const handleLoginSuccess = async (token) => {
     localStorage.setItem('authToken', token);
     console.log('Автентифікація успішна');
+    navigate('/contacts');
+
+    // Add the Go Out button
+    <Button
+      variant="contained"
+      style={{ backgroundColor: 'red', color: 'white' }}
+      onClick={() => navigate('/logout')}
+    >
+      Go Out
+    </Button>
   };
 
   const handleSubmit = async (e) => {

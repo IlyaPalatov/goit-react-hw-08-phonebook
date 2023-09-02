@@ -12,14 +12,14 @@ const Contacts = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('authToken');
+
+    if (!token) {
+      return navigate('/login');
+    }
+
     const fetchContacts = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-
-        if (!token) {
-          throw new Error('Authorization token is missing');
-        }
-
         const response = await axios.get('https://connections-api.herokuapp.com/contacts', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -31,11 +31,7 @@ const Contacts = () => {
         }
       } catch (error) {
         if (error.response) {
-          if (error.response.status === 401) {
-            navigate('/login'); 
-          } else {
-            setError(error.response.data.error);
-          }
+          setError(error.response.data.error);
         } else {
           setError('Error fetching contacts');
         }
@@ -103,6 +99,7 @@ const Contacts = () => {
       }
     }
   };
+
   const filteredContacts = contacts.filter((contact) =>
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );

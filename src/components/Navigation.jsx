@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import UserMenu from './UserMenu';
 
 const Navigation = () => {
+  const isAuthenticated= useState(!!localStorage.getItem('authToken'));
+
   return (
     <nav style={navStyle}>
       <ul style={ulStyle}>
@@ -17,9 +19,15 @@ const Navigation = () => {
           </Link>
         </li>
         <li style={liStyle}>
-          <Link to="/contacts" style={linkStyle}>
-            Contacts
-          </Link>
+          {isAuthenticated ? (
+            <Link to="/contacts" style={linkStyle}>
+              Contacts
+            </Link>
+          ) : (
+            <Link to="/login" style={linkStyle}>
+              Login
+            </Link>
+          )}
         </li>
       </ul>
       <UserMenu />
