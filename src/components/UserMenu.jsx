@@ -1,17 +1,66 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Button } from '@mui/material';
 
-const UserMenu = ({ userEmail, onLogout }) => {
-  const handleLogout = () => {
-    // Викликати функцію для виходу з облікового запису, наприклад, передану через props
-    onLogout();
+const Logout = () => {
+  const [error, setError] = useState(null);
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+
+      if (!token) {
+        throw new Error('The authorization token is missing');
+      }
+
+      const response = await axios.post(
+        'https://connections-api.herokuapp.com/users/logout',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        localStorage.removeItem('authToken');
+        setIsLoggedOut(true);
+        console.log('User exit successful');
+        // Перезавантажуємо сторінку
+        window.location.reload();
+      }
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.error);
+      } else {
+        setError('Error while exiting');
+      }
+    }
   };
+
+  const isUserLoggedIn = localStorage.getItem('authToken') !== null;
 
   return (
     <div>
-      <p>{userEmail}</p>
-      <button onClick={handleLogout}>Logout</button>
+      {isUserLoggedIn && !isLoggedOut ? (
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {error ? (
+            <p>Error: {error}</p>
+          ) : (
+            <Button
+              variant="contained"
+              style={{ backgroundColor: 'red', color: 'white' }}
+              onClick={handleLogout}
+            >
+              Go Out
+            </Button>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 };
 
-export default UserMenu;
+export default Logout;

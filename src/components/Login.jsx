@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Button, TextField, Typography, Container } from '@mui/material';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -15,53 +16,73 @@ const Login = () => {
     });
   };
 
+  const handleLoginSuccess = (token) => {
+    localStorage.setItem('authToken', token);
+    console.log('Автентифікація успішна');
+    // Перезавантажуємо сторінку
+    window.location.reload();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('https://connections-api.herokuapp.com/auth/login', formData);
+      const response = await axios.post(
+        'https://connections-api.herokuapp.com/users/login',
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       if (response.status === 200) {
-        // Якщо логін успішний, можливо виконати дії, наприклад, перенаправити користувача
-        console.log('Логін успішний');
+        handleLoginSuccess(response.data.token);
       }
     } catch (error) {
-      // Обробка помилок при логіні
       if (error.response) {
-        console.error('Помилка при логіні:', error.response.data.error);
+        console.error('Authentication failed:', error.response.data.error);
       } else {
-        console.error('Помилка під час логіну:', error.message);
+        console.error('An error occurred during authentication:', error.message);
       }
     }
   };
 
   return (
-    <div>
-      <h2>Логін</h2>
+    <Container maxWidth="xs">
+      <Typography variant="h2">Authentication</Typography>
       <form onSubmit={handleSubmit}>
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <label>
-          Пароль:
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <button type="submit">Увійти</button>
+        <TextField
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          variant="outlined"
+          fullWidth
+          required
+          margin="normal"
+        />
+        <TextField
+          label="Password"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          variant="outlined"
+          fullWidth
+          required
+          margin="normal"
+        />
+        <Button type="submit" variant="contained" color="primary">
+          Sign in
+        </Button>
       </form>
-    </div>
+    </Container>
   );
 };
 

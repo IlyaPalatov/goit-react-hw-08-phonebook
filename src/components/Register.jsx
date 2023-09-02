@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Button, TextField, Typography, Container, Box } from '@mui/material';
 
 const Register = () => {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
   });
@@ -15,53 +17,87 @@ const Register = () => {
     });
   };
 
+  const handleRegisterSuccess = (token) => {
+    localStorage.setItem('authToken', token);
+    console.log('Authentication is successful');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('https://connections-api.herokuapp.com/users/signup', formData);
+      const response = await axios.post(
+        'https://connections-api.herokuapp.com/users/signup',
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       if (response.status === 201) {
-        // Реєстрація пройшла успішно, можливо відобразити повідомлення про успішну реєстрацію
-        console.log('Реєстрація успішна');
+        const { token } = response.data;
+        handleRegisterSuccess(token);
+        console.log('Registration is successful');
       }
     } catch (error) {
-      // Реєстрація не вдалася, обробте помилку, яку повернув сервер
       if (error.response) {
-        console.error('Помилка реєстрації:', error.response.data.error);
+        console.error('Registration error:', error.response.data.error);
       } else {
-        console.error('Помилка під час реєстрації:', error.message);
+        console.error('Error during registration:', error.message);
       }
     }
   };
 
   return (
-    <div>
-      <h2>Реєстрація</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Email:
-          <input
+    <Container maxWidth="xs">
+      <Typography variant="h4">Registration</Typography>
+      <Box mt={2}>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Name"
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Email"
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
+            variant="outlined"
+            fullWidth
             required
+            margin="normal"
           />
-        </label>
-        <label>
-          Пароль:
-          <input
+          <TextField
+            label="Password"
             type="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
+            variant="outlined"
+            fullWidth
             required
+            margin="normal"
           />
-        </label>
-        <button type="submit">Зареєструватися</button>
-      </form>
-    </div>
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Sign up
+          </Button>
+        </form>
+      </Box>
+    </Container>
   );
 };
 
