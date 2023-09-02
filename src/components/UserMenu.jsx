@@ -28,8 +28,8 @@ const Logout = () => {
         localStorage.removeItem('authToken');
         setIsLoggedOut(true);
         console.log('User exit successful');
-        // Перезавантажуємо сторінку
-        window.location.reload();
+        // Перезавантаження сторінки
+        window.location.href = '/login'; // Змініть '/login' на URL сторінки, на яку ви хочете перейти
       }
     } catch (error) {
       if (error.response) {

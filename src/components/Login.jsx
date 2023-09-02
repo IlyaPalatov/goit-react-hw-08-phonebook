@@ -19,8 +19,6 @@ const Login = () => {
   const handleLoginSuccess = (token) => {
     localStorage.setItem('authToken', token);
     console.log('Автентифікація успішна');
-    // Перезавантажуємо сторінку
-    window.location.reload();
   };
 
   const handleSubmit = async (e) => {
