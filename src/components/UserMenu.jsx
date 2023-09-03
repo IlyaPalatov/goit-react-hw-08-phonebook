@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Logout = () => {
   const [error, setError] = useState(null);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    setIsUserLoggedIn(token !== null);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -28,6 +37,8 @@ const Logout = () => {
         localStorage.removeItem('authToken');
         setIsLoggedOut(true);
         console.log('User exit successful');
+        
+        navigate('/register');
       }
     } catch (error) {
       if (error.response) {
@@ -37,8 +48,6 @@ const Logout = () => {
       }
     }
   };
-
-  const isUserLoggedIn = localStorage.getItem('authToken') !== null;
 
   return (
     <div>
